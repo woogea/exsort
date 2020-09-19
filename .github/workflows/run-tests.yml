@@ -1,8 +1,6 @@
-name Run tests
+name: Run tests
 on:
-    pull_request:
-        branches:
-            -master
+    push:
 jobs:
     test:
         name: Test on ${{ matrix.os }}
