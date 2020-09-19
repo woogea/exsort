@@ -30,7 +30,6 @@ var (
 				lines = append(lines, stdin.Text())
 			}
 			result := exsort(lines, reg, column, rank, asc)
-			fmt.Println(result)
 			for _, l := range result {
 				if onlyColumn {
 					fmt.Println(strings.Split(l, delimiter))
@@ -51,7 +50,6 @@ func exsort(lines []string, regex string, column int, rank int, asc bool) []stri
 		}
 	}
 	lines = proclines
-	fmt.Println(lines, regex, column, rank, asc)
 	less := func(i, j int) bool {
 		if len(lines[i]) < column || len(lines[j]) < column {
 			panic(lines)
@@ -75,7 +73,6 @@ func exsort(lines []string, regex string, column int, rank int, asc bool) []stri
 		}
 		return va > vb
 	}
-	fmt.Println(lines)
 	sort.SliceStable(lines, less)
 	if asc {
 		rev := []string{}

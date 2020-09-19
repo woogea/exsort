@@ -1,0 +1,19 @@
+name Run tests
+on:
+    pull_request:
+        branches:
+            -master
+jobs:
+    test:
+        name: Test on ${{ matrix.os }}
+        runs-on: ${{matrix.os}}
+        strategy:
+            matrix:
+                os: [ubuntu-latest, windows-latest, macOS-latest]
+        steps:
+            - name: Setup go
+              uses: actions/setup-go@v1
+            - name: Check out code into the Go module directory
+              uses: actions/checkout@v1
+            - name: Test code
+              run: go test -v 
