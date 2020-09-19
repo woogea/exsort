@@ -13,5 +13,7 @@ jobs:
               uses: actions/setup-go@v1
             - name: Check out code into the Go module directory
               uses: actions/checkout@v1
-            - name: Test code
+            - name: setup dependent modules
+              run: go mod vendor
+            - name: Test codek
               run: go test -v 
