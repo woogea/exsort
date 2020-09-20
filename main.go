@@ -19,6 +19,7 @@ var (
 	asc        bool
 	onlyColumn bool
 	delimiter  string
+	includes   string
 	rootCmd    = &cobra.Command{
 		Use:   "exsort",
 		Short: "sort from stdin by selected columns for version",
@@ -41,12 +42,28 @@ var (
 	}
 )
 
+func trimChara(src string) string {
+	var sb strings.Builder
+	for _, v := range src {
+		if v >= '0' && v <= '9' {
+			sb.WriteRune(v)
+		}
+	}
+	return sb.String()
+}
+
 func exsort(lines []string, regex string, column int, rank int, asc bool) []string {
 	//remove extra lines
 	proclines := []string{}
 	for i := range lines {
 		if len(strings.Split(lines[i], delimiter)) > column && len(lines[i]) > 0 {
-			proclines = append(proclines, lines[i])
+			if len(includes) > 0 {
+				if regexp.MustCompile(includes).MatchString(lines[i]) {
+					proclines = append(proclines, lines[i])
+				}
+			} else {
+				proclines = append(proclines, lines[i])
+			}
 		}
 	}
 	lines = proclines
@@ -62,13 +79,21 @@ func exsort(lines []string, regex string, column int, rank int, asc bool) []stri
 		astr := re.Split(tmpa, 255)
 		for _, x := range astr {
 			va *= rank
-			t, _ := strconv.Atoi(x)
+			x = trimChara(x)
+			t, err := strconv.Atoi(x)
+			if err != nil {
+				panic(err)
+			}
 			va += t
 		}
 		bstr := re.Split(tmpb, 255)
 		for _, x := range bstr {
 			vb *= rank
-			t, _ := strconv.Atoi(x)
+			x = trimChara(x)
+			t, err := strconv.Atoi(x)
+			if err != nil {
+				panic(err)
+			}
 			vb += t
 		}
 		return va > vb
@@ -91,6 +116,7 @@ func main() {
 	rootCmd.PersistentFlags().StringVar(&reg, "reg", "[.]", "regexp for split. when 1.2.3 to \"[.]\"")
 	rootCmd.PersistentFlags().BoolVar(&onlyColumn, "only-column", false, "output only specified column")
 	rootCmd.PersistentFlags().StringVar(&delimiter, "delimiter", " ", "column separator")
+	rootCmd.PersistentFlags().StringVar(&includes, "includes", "", "use only matched strings")
 	er := rootCmd.Execute()
 	if er != nil {
 		println(er)
